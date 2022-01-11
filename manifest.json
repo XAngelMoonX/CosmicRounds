@@ -1,0 +1,12 @@
+{
+  "name": "CR",
+  "version_number": "1.7.4",
+  "website_url": "",
+  "description": "Adds 45 cards to the game!",
+  "dependencies": [
+    "willis81808-UnboundLib-2.10.2",
+    "BepInEx-BepInExPack_ROUNDS-5.4.1100",
+    "Pykess-CardChoiceSpawnUniqueCardPatch-0.1.7",
+    "Pykess-ModdingUtils-0.2.6"
+  ]
+}
