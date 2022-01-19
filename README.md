@@ -53,6 +53,18 @@ New Cards
 -   Quasar (Rare)
 
 ### Versions
+-   v1.7.6
+    -   Both Glazes have had their descriptions adjusted to match their ability changes from last patch.
+    -   Fear Factor's visuals should no longer appear if you don't have it.
+    -   Careen now has +1 Bounce, it also falls after bouncing.
+    -   Fae Embers has reduced damage, and its minimum rate has been raised.
+    -   Aqua Ring now recoveries health based on max hp.
+
+-   v1.7.5
+    -   Fixed a bug with Hawk and Recon that prevented you from shooting.
+    -   Golden Glaze has increased effects, and it lasts longer.
+    -   Sugar Glaze has increased effects, and it lasts shorter.
+
 -   v1.7.4
     -   Hawk and Recon now remove Burst-like and Barrage-like effects.
     -   Speed Up now says it lowers health by 25%, it already did this.

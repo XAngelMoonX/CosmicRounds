@@ -28,7 +28,7 @@ namespace CR
 {
     [BepInDependency("com.willis.rounds.unbound", BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency("pykess.rounds.plugins.cardchoicespawnuniquecardpatch", BepInDependency.DependencyFlags.HardDependency)]
-    [BepInPlugin("com.XAngelMoonX.rounds.CosmicRounds", "Cosmic Rounds", "1.7.4")]
+    [BepInPlugin("com.XAngelMoonX.rounds.CosmicRounds", "Cosmic Rounds", "1.7.6")]
     [BepInProcess("Rounds.exe")]
 
 
@@ -182,7 +182,7 @@ namespace CR
 
         private const string ModId = "com.XAngelMoonX.rounds.CosmicRounds";
         private const string ModName = "CR";
-        public const string Version = "1.7.4";
+        public const string Version = "1.7.6";
         internal static AssetBundle ArtAsset;
 
     }
