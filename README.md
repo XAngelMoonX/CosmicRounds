@@ -15,7 +15,7 @@ New Cards
 -   Stasis  (Common)
 -   Ones King  (Rare)
 -   Bullet Time  (Common)
--   Stun  (Rare)
+-   Stun  (Uncommon)
 -   Fear Factor  (Uncommon)
 -   Star  (Uncmmon)
 -   Critical Hit  (Common)
@@ -53,6 +53,26 @@ New Cards
 -   Quasar (Rare)
 
 ### Versions
+-   v1.7.7
+    -   Fear Factor should no longer cause frame drops.
+    -   Glue has increased effects and now lowers reload time by -20%.
+    -   Flex's ability cooldown should be accurate.
+    -   Stun is now Uncommon instead of Rare, but it's reload time has been lowered, and it no longer deals increased damage. (-35% -> -25%)
+    -   Aqua Ring now recovers less health, and is active for 3 seconds instead of 5.
+    -   Quasar now deals less damage, but is active for 3 seconds instead of 2.
+
+-   v1.7.6
+    -   Both Glazes have had their descriptions adjusted to match their ability changes from last patch.
+    -   Fear Factor's visuals should no longer appear if you don't have it.
+    -   Careen now has +1 Bounce, it also falls after bouncing.
+    -   Fae Embers has reduced damage, and its minimum rate has been raised.
+    -   Aqua Ring now recovers health based on max hp.
+
+-   v1.7.5
+    -   Fixed a bug with Hawk and Recon that prevented you from shooting.
+    -   Golden Glaze has increased effects, and it lasts longer.
+    -   Sugar Glaze has increased effects, and it lasts shorter.
+
 -   v1.7.4
     -   Hawk and Recon now remove Burst-like and Barrage-like effects.
     -   Speed Up now says it lowers health by 25%, it already did this.
@@ -64,7 +84,7 @@ New Cards
     -   Cloud now increses Bullet Speed by 30%.
     -   Pulse now has +2 Bounces. (+1 -> +2)
     -   Ignite now increases damage by 30%, but no longer reduces block cooldown.
-    -   Fae Embers deals more damage, but
+    -   Fae Embers deals more damage.
     -   Pulsar now actually gives +2 Bounces.
 
 -   v1.7.3

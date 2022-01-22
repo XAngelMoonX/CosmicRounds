@@ -213,7 +213,7 @@ namespace CR.Cards
 			gun.projectileSpeed *= 3f;
 			gun.spread = 0f;
 			gun.evenSpread = 0f;
-			gun.numberOfProjectiles = 0;
+			gun.numberOfProjectiles = 1;
 			gun.bursts = 0;
 			gun.timeBetweenBullets = 0;
 			gun.damage *= 1.25f;
@@ -876,8 +876,8 @@ namespace CR.Cards
 		public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
 		{
 			gunAmmo.maxAmmo -= 2;
-			gun.projectileColor += Color.yellow;
-			gun.reloadTime *= 0.65f;
+			gun.projectileColor = Color.yellow;
+			gun.reloadTime *= 0.75f;
 			List<ObjectsToSpawn> list = gun.objectsToSpawn.ToList();
 			list.Add(new ObjectsToSpawn
 			{
@@ -920,7 +920,7 @@ namespace CR.Cards
 
 		protected override CardInfo.Rarity GetRarity()
 		{
-			return CardInfo.Rarity.Rare;
+			return CardInfo.Rarity.Uncommon;
 		}
 
 		protected override CardInfoStat[] GetStats()
@@ -931,7 +931,7 @@ namespace CR.Cards
 				{
 					positive = true,
 					stat = "Reload Time",
-					amount = "-35%",
+					amount = "-25%",
 					simepleAmount = CardInfoStat.SimpleAmount.lower
 				},
 
@@ -1020,7 +1020,7 @@ namespace CR.Cards
 					positive = true,
 					stat = "Health",
 					amount = "+30%",
-					simepleAmount = CardInfoStat.SimpleAmount.aLotOf
+					simepleAmount = CardInfoStat.SimpleAmount.Some
 				},
 				new CardInfoStat
 				{
@@ -1317,7 +1317,7 @@ namespace CR.Cards
 					positive = true,
 					stat = "Reload Time",
 					amount = "-30%",
-					simepleAmount = CardInfoStat.SimpleAmount.aHugeAmountOf
+					simepleAmount = CardInfoStat.SimpleAmount.lower
 				},
 				new CardInfoStat
 				{
@@ -1541,7 +1541,7 @@ namespace CR.Cards
 			gun.attackSpeed *= 2f;
 			gun.spread = 0f;
 			gun.evenSpread = 0f;
-			gun.numberOfProjectiles = 0;
+			gun.numberOfProjectiles = 1;
 			gun.bursts = 0;
 			gun.timeBetweenBullets = 0;
 			gun.projectileColor = new Color(1f, 1f, 0.1f, 1f);
@@ -1806,7 +1806,7 @@ namespace CR.Cards
 					positive = true,
 					stat = "Block Cooldown",
 					amount = "-30%",
-					simepleAmount = CardInfoStat.SimpleAmount.slightlyLower
+					simepleAmount = CardInfoStat.SimpleAmount.lower
 				},
 				new CardInfoStat
 				{
@@ -2062,7 +2062,7 @@ namespace CR.Cards
 
 		protected override string GetDescription()
 		{
-			return "Bullets slow targets and reduce current hp by 20% for 2 seconds.";
+			return "Bullets slow targets and reduce current hp by 20% for 3 seconds.";
 		}
 
 		protected override GameObject GetCardArt()
@@ -2169,7 +2169,7 @@ namespace CR.Cards
 					positive = true,
 					stat = "Health",
 					amount = "+30%",
-					simepleAmount = CardInfoStat.SimpleAmount.aLittleBitOf
+					simepleAmount = CardInfoStat.SimpleAmount.Some
 				}
 			};
 		}
@@ -2225,7 +2225,7 @@ namespace CR.Cards
 
 		protected override string GetDescription()
 		{
-			return "Bullets make targets jump and makes them faster for 3 seconds.";
+			return "Bullets make targets jump and makes them faster for 2 seconds.";
 		}
 
 		protected override GameObject GetCardArt()
@@ -2721,7 +2721,7 @@ namespace CR.Cards
 					positive = true,
 					stat = "Damage",
 					amount = "+30%",
-					simepleAmount = CardInfoStat.SimpleAmount.aLotOf
+					simepleAmount = CardInfoStat.SimpleAmount.Some
 				},
 				new CardInfoStat
 				{
@@ -2834,7 +2834,7 @@ namespace CR.Cards
 					positive = false,
 					stat = "Reload Time",
 					amount = "+25%",
-					simepleAmount = CardInfoStat.SimpleAmount.slightlyLower
+					simepleAmount = CardInfoStat.SimpleAmount.Some
 				}
 			};
 		}
@@ -3550,6 +3550,7 @@ namespace CR.Cards
 			gun.damage *= 1.40f;
 			gun.gravity *= 0.7f;
 			gunAmmo.reloadTime += 0.25f;
+			gun.reflects += 1;
 			List<ObjectsToSpawn> list = gun.objectsToSpawn.ToList();
 			list.Add(new ObjectsToSpawn
 			{
@@ -3558,7 +3559,10 @@ namespace CR.Cards
 						typeof(CareenMono)
 					})
 			});
-
+			ObjectsToSpawn objectsToSpawn2 = ((GameObject)Resources.Load("0 cards/Mayhem")).GetComponent<Gun>().objectsToSpawn[0];
+			list.Add(
+				objectsToSpawn2
+			);
 			gun.objectsToSpawn = list.ToArray();
 		}
 
@@ -3574,7 +3578,7 @@ namespace CR.Cards
 
 		protected override string GetDescription()
 		{
-			return "Your Bullets hardly fall!";
+			return "Your Bullets hardly fall until they hit something!";
 		}
 
 		protected override GameObject GetCardArt()
@@ -3604,6 +3608,13 @@ namespace CR.Cards
 					stat = "Bullet Gravity",
 					amount = "-30%",
 					simepleAmount = CardInfoStat.SimpleAmount.lower
+				},
+				new CardInfoStat
+				{
+					positive = true,
+					stat = "Bounce",
+					amount = "+1",
+					simepleAmount = CardInfoStat.SimpleAmount.notAssigned
 				},
 				new CardInfoStat
 				{
@@ -3813,6 +3824,7 @@ namespace CR.Cards
 		{
 			gun.projectileColor = new Color(1f, 1f, 1f, 1f);
 			gun.projectileSpeed *= 0.7f;
+			gunAmmo.reloadTime *= 0.80f;
 			gun.reflects = 0;
 			GlueMono glueMono = player.gameObject.AddComponent<GlueMono>();
 			if (gun.slow > 0)
@@ -3858,7 +3870,15 @@ namespace CR.Cards
 				{
 					positive = true,
 					stat = "Bullet Slow",
-					amount = "+10%"
+					amount = "+10%",
+					simepleAmount = CardInfoStat.SimpleAmount.aLittleBitOf
+				},
+				new CardInfoStat
+				{
+					positive = true,
+					stat = "Reload Time",
+					amount = "-20%",
+					simepleAmount = CardInfoStat.SimpleAmount.lower
 				},
 				new CardInfoStat
 				{

@@ -49,7 +49,7 @@ namespace CR.MonoBehaviors
 			DamageOverTime component = hit.transform.GetComponent<DamageOverTime>();
 			if (component)
 			{
-				component.TakeDamageOverTime(componentInParent.damage * this.transform.forward * 1.1f, this.transform.position, this.time, this.interval, this.color, this.soundEventDamageOverTime, this.GetComponentInParent<ProjectileHit>().ownWeapon, this.GetComponentInParent<ProjectileHit>().ownPlayer, true);
+				component.TakeDamageOverTime(componentInParent.damage * this.transform.forward, this.transform.position, this.time, this.interval, this.color, this.soundEventDamageOverTime, this.GetComponentInParent<ProjectileHit>().ownWeapon, this.GetComponentInParent<ProjectileHit>().ownPlayer, true);
 			}
 
 			return HasToReturn.canContinue;
@@ -96,7 +96,6 @@ namespace CR.MonoBehaviors
 				{
 					
 					this.canTrigger = true; 
-					this.ResetEffectTimer();
 
 				}
 			}
@@ -119,16 +118,16 @@ namespace CR.MonoBehaviors
 			if (component)
 			{
 				ProjectileHit componentInParent = this.GetComponentInParent<ProjectileHit>();
-				float num = 25f;
+				float num = 30f;
 				if (componentInParent)
 				{
 					num = componentInParent.damage;
 				}
-				float num2 = this.triggerChancePerTenDamage * num * 0.1f;
+				float num2 = this.triggerChancePerTenDamage * num * 0.3f;
 				num2 += this.baseTriggerChance;
 				if (UnityEngine.Random.value < num2)
 				{
-					float num3 = this.baseStunTime + this.stunTimePerTenDamage * num * 0.1f;
+					float num3 = this.baseStunTime + this.stunTimePerTenDamage * num * 0.3f;
 					this.SetMultiplier();
 					num3 *= this.stunMultiplier;
 					num3 = Mathf.Pow(num3, this.stunTimeExponent);
@@ -139,7 +138,7 @@ namespace CR.MonoBehaviors
 					}
 					if (num3 > this.stunTimeThreshold && this.canTrigger == true)
 					{
-						component.AddStun(num3 * 0.5f);
+						component.AddStun(num3 * 0.3f);
 						this.canTrigger = false;
 						this.ResetEffectTimer();
 					}
@@ -361,7 +360,7 @@ namespace CR.MonoBehaviors
 					this.Destroy();
 				}
 
-				if (this.player.data.dead == true)
+				if (this.GetComponent<Player>().data.dead == true | this.GetComponent<Player>().data.health <= 0f)
 				{
 					this.ResetTimer();
 					this.Destroy();
@@ -415,6 +414,7 @@ namespace CR.MonoBehaviors
 
 		private float startTime;
 		private float timeOfLastEffect;
+		private int numcheck = 0;
 
 		private void Awake()
 		{
@@ -469,28 +469,48 @@ namespace CR.MonoBehaviors
 			UnityEngine.Object.Destroy(this);
 		}
 
-		private void FixedUpdate()
+
+		private void Update()
 		{
 			// if its time to update, then update
 			if (Time.time >= this.startTime + this.updateDelay)
 			{
-				this.ResetTimer();
-
-				// if the effect is cooled down, continue
-
-				if (Time.time >= this.timeOfLastEffect + this.effectCooldown)
+				int i = 0;
+				while (i <= this.player.data.currentCards.Count - 1)
 				{
-
-					// search through the transforms (no need to iterate) for things that match our criteria
-					if (UnityEngine.Object.FindObjectsOfType<MoveTransform>().Where(obj => obj.GetComponent<SpawnedAttack>() != null && obj.GetComponent<SpawnedAttack>().spawner != this.player && Vector3.Distance(this.player.transform.position, obj.transform.position) < this.maxDistance * (Mathf.Pow(this.player.data.maxHealth / 100f * 1.2f, 0.2f) * this.player.data.stats.sizeMultiplier)/1.2f).Any())
+					if (this.player.data.currentCards[i].cardName == "Fear Factor")
 					{
-						// if anything met our criteria, do the thing and reset the timer
+						this.numcheck += 1;
+					}
 
-						this.ResetEffectTimer();
-						this.player.data.weaponHandler.gun.Attack(2.5f, true, 0.35f, 1f, false);
+					i++;
+				}
 
+				if (numcheck > 0)
+				{
+					this.ResetTimer();
+
+					// if the effect is cooled down, continue
+
+					if (Time.time >= this.timeOfLastEffect + this.effectCooldown)
+					{
+						int layer = LayerMask.GetMask("Projectile");
+
+						foreach (Collider2D buwwet in Physics2D.OverlapCircleAll(this.transform.position, 7.2f, layer).Where((uwu) => uwu.gameObject.GetComponentInParent<ProjectileHit>() != null && uwu.gameObject.GetComponentInParent<ProjectileHit>().ownPlayer != this.player && PlayerManager.instance.CanSeePlayer(uwu.gameObject.transform.position, this.player).canSee))
+						{
+								// if anything met our criteria, do the thing and reset the timer
+
+								this.ResetEffectTimer();
+								this.player.data.weaponHandler.gun.Attack(2f, true, 0.5f, 1f, false);
+
+						}
 					}
 				}
+
+				else
+                {
+					this.Destroy();
+                }
 			}
 
 		}
@@ -498,6 +518,7 @@ namespace CR.MonoBehaviors
 		private void ResetTimer()
 		{
 			this.startTime = Time.time;
+			this.numcheck = 0;
 		}
 		private void ResetEffectTimer()
 		{
@@ -941,7 +962,7 @@ namespace CR.MonoBehaviors
 			UnityEngine.Object.Destroy(this);
 		}
 
-		private void FixedUpdate()
+		private void Update()
 		{
 			if (Time.time >= this.startTime + this.updateDelay)
 			{
@@ -1146,8 +1167,8 @@ namespace CR.MonoBehaviors
 		public override void OnStart()
 		{
 			this.characterDataModifier.health_mult *= 0.8f;
-			this.characterStatModifiersModifier.movementSpeed_mult /= 2f;
-			this.characterStatModifiersModifier.jump_mult /= 2f;
+			this.characterStatModifiersModifier.movementSpeed_mult /= 2.3f;
+			this.characterStatModifiersModifier.jump_mult /= 2.3f;
 			this.colorEffect = this.player.gameObject.AddComponent<ReversibleColorEffect>();
 			this.colorEffect.SetColor(this.color);
 			this.colorEffect.SetLivesToEffect(1);
@@ -1167,7 +1188,7 @@ namespace CR.MonoBehaviors
 					this.colorEffect.Destroy();
 				}
 
-				if (this.player.data.dead == true)
+				if (this.GetComponent<Player>().data.dead == true | this.GetComponent<Player>().data.health <= 0f)
 				{
 					this.ResetTimer();
 					this.Destroy();
@@ -1214,7 +1235,7 @@ namespace CR.MonoBehaviors
 
 		private readonly float updateDelay = 0.1f;
 
-		private readonly float effectCooldown = 2f;
+		private readonly float effectCooldown = 3f;
 
 		private float startTime;
 
@@ -1266,9 +1287,9 @@ namespace CR.MonoBehaviors
 
 		public override void OnStart()
 		{
-			this.characterStatModifiersModifier.movementSpeed_mult *= 3f;
-			this.characterStatModifiersModifier.gravity_mult *= 3f;
-			this.characterStatModifiersModifier.jump_mult *= 2f;
+			this.characterStatModifiersModifier.movementSpeed_mult *= 3.5f;
+			this.characterStatModifiersModifier.gravity_mult *= 3.5f;
+			this.characterStatModifiersModifier.jump_mult *= 3f;
 			this.colorEffect = this.player.gameObject.AddComponent<ReversibleColorEffect>();
 			this.colorEffect.SetColor(this.color);
 			this.colorEffect.SetLivesToEffect(1);
@@ -1288,7 +1309,7 @@ namespace CR.MonoBehaviors
 					this.colorEffect.Destroy();
 				}
 
-				if (this.player.data.dead == true)
+				if (this.GetComponent<Player>().data.dead == true | this.GetComponent<Player>().data.health <= 0f)
 				{
 					this.ResetTimer();
 					this.Destroy();
@@ -1335,7 +1356,7 @@ namespace CR.MonoBehaviors
 
 		private readonly float updateDelay = 0.1f;
 
-		private readonly float effectCooldown = 3f;
+		private readonly float effectCooldown = 2f;
 
 		private float startTime;
 
@@ -1521,7 +1542,7 @@ namespace CR.MonoBehaviors
 					this.effect.Active = false;
 				}
 
-				if (this.player.data.dead == true)
+				if (this.GetComponent<Player>().data.dead == true | this.GetComponent<Player>().data.health <= 0f)
 				{
 					this.ResetTimer();
 					this.Destroy();
@@ -1671,7 +1692,7 @@ namespace CR.MonoBehaviors
 					this.effect.able = false;
 				}
 
-				if (this.player.data.dead == true)
+				if (this.GetComponent<Player>().data.dead == true | this.GetComponent<Player>().data.health <= 0f)
 				{
 					this.ResetTimer();
 					this.Destroy();
@@ -2036,7 +2057,7 @@ namespace CR.MonoBehaviors
 
 			}
 
-			if (this.player.data.dead == true)
+			if (this.GetComponent<Player>().data.dead == true | this.GetComponent<Player>().data.health <= 0f)
 			{
 				this.ResetTimer();
 				this.Destroy();
@@ -3289,7 +3310,7 @@ namespace CR.MonoBehaviors
 					this.Destroy();
 				}
 
-				if (this.player.data.dead == true)
+				if (this.GetComponent<Player>().data.dead == true | this.GetComponent<Player>().data.health <= 0f)
 				{
 					this.ResetTimer();
 					this.Destroy();
@@ -3371,7 +3392,7 @@ namespace CR.MonoBehaviors
 					this.Destroy();
 				}
 
-				if (this.player.data.dead == true)
+				if (this.GetComponent<Player>().data.dead == true | this.GetComponent<Player>().data.health <= 0f)
 				{
 					this.ResetTimer();
 					this.Destroy();
@@ -3452,7 +3473,7 @@ namespace CR.MonoBehaviors
 					this.Destroy();
 				}
 
-				if (this.player.data.dead == true)
+				if (this.GetComponent<Player>().data.dead == true | this.GetComponent<Player>().data.health <= 0f)
 				{
 					this.ResetTimer();
 					this.Destroy();
@@ -3533,7 +3554,7 @@ namespace CR.MonoBehaviors
 					this.Destroy();
 				}
 
-				if (this.player.data.dead == true)
+				if (this.GetComponent<Player>().data.dead == true | this.GetComponent<Player>().data.health <= 0f)
 				{
 					this.ResetTimer();
 					this.Destroy();
@@ -3615,7 +3636,7 @@ namespace CR.MonoBehaviors
 					this.Destroy();
 				}
 
-				if (this.player.data.dead == true)
+				if (this.GetComponent<Player>().data.dead == true | this.GetComponent<Player>().data.health <= 0f)
 				{
 					this.ResetTimer();
 					this.Destroy();
@@ -3697,7 +3718,7 @@ namespace CR.MonoBehaviors
 					this.Destroy();
 				}
 
-				if (this.player.data.dead == true)
+				if (this.GetComponent<Player>().data.dead == true | this.GetComponent<Player>().data.health <= 0f)
 				{
 					this.ResetTimer();
 					this.Destroy();
@@ -3792,7 +3813,7 @@ namespace CR.MonoBehaviors
 					this.Destroy();
 				}
 
-				if (this.player.data.dead == true)
+				if (this.GetComponent<Player>().data.dead == true | this.GetComponent<Player>().data.health <= 0f)
 				{
 					this.ResetTimer();
 					this.Destroy();
@@ -3930,7 +3951,7 @@ namespace CR.MonoBehaviors
 					this.Destroy();
 				}
 
-				if (this.player.data.dead == true)
+				if (this.GetComponent<Player>().data.dead == true | this.GetComponent<Player>().data.health <= 0f)
 				{
 					this.ResetTimer();
 					this.Destroy();
@@ -4431,7 +4452,7 @@ namespace CR.MonoBehaviors
 					this.Destroy();
                 }
 
-				if (this.player.data.dead == true)
+				if (this.GetComponent<Player>().data.dead == true | this.GetComponent<Player>().data.health <= 0f)
 				{
 					this.ResetTimer();
 					this.Destroy();
@@ -4522,7 +4543,7 @@ namespace CR.MonoBehaviors
 					if (Time.time >= this.timeOfLastEffect + this.effectCooldown)
                     {
 						UnityEngine.Object.Instantiate<GameObject>(FaeEmbersMono.faeVisual, player.gameObject.transform.position, Quaternion.identity);
-						if (this.effectCooldown > 0.2f)
+						if (this.effectCooldown > 0.3f)
                         {
 							this.effectCooldown -= 0.05f;
                         };
@@ -4538,12 +4559,12 @@ namespace CR.MonoBehaviors
 								if (flag4)
 								{
 									HealthHandler component = array[i].transform.GetComponent<HealthHandler>();
-									component.DoDamage(8f * Vector2.down, array[i].transform.position, new Color(1f, 0.5f, 1f, 1f), this.player.data.weaponHandler.gameObject, this.player, true, true, true);
+									component.DoDamage(6f * Vector2.down, array[i].transform.position, new Color(1f, 0.5f, 1f, 1f), this.player.data.weaponHandler.gameObject, this.player, true, true, true);
 								}
 								else if (flag3)
 								{
 									HealthHandler component = array[i].transform.GetComponent<HealthHandler>();
-									component.DoDamage(5f * Vector2.down, array[i].transform.position, new Color(1f, 0.5f, 1f, 1f), this.player.data.weaponHandler.gameObject, this.player, true, true, true);
+									component.DoDamage(3f * Vector2.down, array[i].transform.position, new Color(1f, 0.5f, 1f, 1f), this.player.data.weaponHandler.gameObject, this.player, true, true, true);
 								}
 							}
 						}
@@ -4638,20 +4659,17 @@ namespace CR.MonoBehaviors
 
 	}
 
-	public class CareenMono : MonoBehaviour
+	public class CareenMono : BounceTrigger
 	{
-		// Token: 0x0600023E RID: 574 RVA: 0x0000E3A6 File Offset: 0x0000C5A6
 		private void Start()
 		{
 			this.move = this.GetComponentInParent<MoveTransform>();
 			this.GetComponentInParent<SyncProjectile>().active = true;
 			this.ResetTimer();
+			this.bounceEffects = base.GetComponents<BounceEffect>();
+			RayHitReflect componentInParent = base.GetComponentInParent<RayHitReflect>();
+			componentInParent.reflectAction = (Action<HitInfo>)Delegate.Combine(componentInParent.reflectAction, new Action<HitInfo>(this.Reflect));
 
-		}
-
-		public void Destroy()
-		{
-			UnityEngine.Object.Destroy(this);
 		}
 
 		private void ResetTimer()
@@ -4659,27 +4677,46 @@ namespace CR.MonoBehaviors
 			this.startTime = Time.time;
 		}
 
-		// Token: 0x0600023F RID: 575 RVA: 0x0000E3D8 File Offset: 0x0000C5D8
+		public void Destroy()
+		{
+			UnityEngine.Object.Destroy(this);
+		}
+
+		public new void Reflect(HitInfo hit)
+		{
+			for (int i = 0; i < this.bounceEffects.Length; i++)
+			{
+				this.bounceEffects[i].DoBounce(hit);
+			}
+
+			this.caree++;
+		}
+
 		private void Update()
 		{
 			if (Time.time >= this.startTime + this.updateDelay && this.gameObject.transform.parent != null)
 			{
-				this.ResetTimer();
-				if (this.move.velocity.y < 0f)
+				if (this.move.velocity.y < 0f && this.caree == 1)
 				{
-					this.move.velocity.y = 0f;
+						this.move.velocity.y = 0f;
 				}
 				this.move.velocity.z = 0f;
-
+				this.ResetTimer();
 			}
 		}
 
+		public int caree = 1;
+
+		public Player player;
 
 		private MoveTransform move;
 
 		private readonly float updateDelay = 0.1f;
 
 		private float startTime;
+
+		private BounceEffect[] bounceEffects;
+
 	}
 
 	public class AsteroidMono : MonoBehaviour
@@ -4872,7 +4909,7 @@ namespace CR.MonoBehaviors
 					this.Destroy();
 				}
 
-				if (this.player.data.dead == true)
+				if (this.GetComponent<Player>().data.dead == true | this.GetComponent<Player>().data.health <= 0f)
 				{
 					this.ResetTimer();
 					this.Destroy();
@@ -5034,7 +5071,7 @@ namespace CR.MonoBehaviors
 
 		public override void OnStart()
 		{
-			this.characterStatModifiersModifier.movementSpeed_mult *= 0.6f;
+			this.characterStatModifiersModifier.movementSpeed_mult *= 0.45f;
 			this.characterStatModifiersModifier.jump_mult *= 0.6f;
 			this.ResetTimer();
 			this.count = 0f;
@@ -5054,7 +5091,7 @@ namespace CR.MonoBehaviors
 					this.Destroy();
 				}
 
-				if (this.player.data.dead == true)
+				if (this.GetComponent<Player>().data.dead == true | this.GetComponent<Player>().data.health <= 0f)
 				{
 					this.ResetTimer();
 					this.Destroy();
@@ -5146,7 +5183,7 @@ namespace CR.MonoBehaviors
 				{
 					GameObject gameObject = new GameObject();
 					gameObject.transform.position = player.gameObject.transform.position;
-					gameObject.AddComponent<RemoveAfterSeconds>().seconds = 5f;
+					gameObject.AddComponent<RemoveAfterSeconds>().seconds = 3f;
 					AquaRing aquaRing = gameObject.AddComponent<AquaRing>();
 					if (AquaRingMono.lineEffect == null)
 					{
@@ -5318,8 +5355,10 @@ namespace CR.MonoBehaviors
 					bool flag = Vector2.Distance(a, array[i].transform.position) <= 6f;
 					if (flag)
 					{
+						CharacterData dat = array[i].gameObject.GetComponent<CharacterData>();
+						float dam = dat.maxHealth * 0.015f;
 						HealthHandler health = array[i].gameObject.GetComponent<HealthHandler>();
-						health.Heal(2f);
+						health.Heal(dam);
 						
 					}
 				}
@@ -5389,7 +5428,7 @@ namespace CR.MonoBehaviors
 				{
 					GameObject gameObject = new GameObject();
 					gameObject.transform.position = player.gameObject.transform.position;
-					gameObject.AddComponent<RemoveAfterSeconds>().seconds = 2f;
+					gameObject.AddComponent<RemoveAfterSeconds>().seconds = 3f;
 					Quasar quasar = gameObject.AddComponent<Quasar>();
 					quasar.player = this.player;
 					if (QuasarMono.lineEffect == null)
@@ -5686,7 +5725,7 @@ namespace CR.MonoBehaviors
 							CharacterData dat = array[i].gameObject.GetComponent<CharacterData>();
 							StunHandler stun = array[i].gameObject.GetComponent<StunHandler>();
 							array[i].transform.position += Vector3.ClampMagnitude(this.transform.position - array[i].transform.position, 0.5f) * 1.15f;
-							float dam = dat.maxHealth * 0.04f;
+							float dam = dat.maxHealth * 0.03f;
 							health.TakeDamage(dam * Vector2.down, array[i].transform.position, this.player.data.weaponHandler.gameObject, this.player, true, true);
 							health.TakeForce(Vector2.MoveTowards(array[i].transform.position, a, 30f), ForceMode2D.Impulse, false, true, 0.5f);
 							UnityEngine.Object.Instantiate<GameObject>(QuasarMono.blackholeVisual, this.gameObject.transform.position, Quaternion.identity);
